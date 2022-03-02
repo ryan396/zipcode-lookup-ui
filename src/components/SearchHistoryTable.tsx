@@ -6,6 +6,7 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import { SearchHistory } from "../Types";
+import { Typography } from "@mui/material";
 
 interface Props {
   zipcodeSearchHistory: SearchHistory[];
@@ -14,6 +15,7 @@ interface Props {
 export default function SearchHistoryTable({ zipcodeSearchHistory }: Props) {
   return (
     <TableContainer sx={{ mt: 5, minHeight: 300 }} component={Paper}>
+      <Typography variant="h6">Search History</Typography>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>

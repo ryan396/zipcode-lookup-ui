@@ -41,7 +41,6 @@ function App() {
         setFormValues(formDefaultValue);
       })
       .catch((error) => {
-        console.log("error", error.response);
         if (error.response.status === 404) {
           setErrorAlertMessage("No results for this search criteria");
         } else {
