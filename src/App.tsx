@@ -1,9 +1,11 @@
-import { Grid, TextField, Paper, Button, Typography } from "@mui/material";
+import { Grid } from "@mui/material";
 import axios from "axios";
 import React, { useState } from "react";
 import "./App.css";
 import SearchHistoryTable from "./components/SearchHistoryTable";
 import { Place, SearchHistory } from "./Types";
+import Navbar from "./components/Navbar";
+import SearchForm from "./components/SearchForm";
 
 function App() {
   const formDefaultValue = {
@@ -16,16 +18,16 @@ function App() {
   const [zipcodeSearchHistory, setZipcodeSearchHistory] = useState<
     SearchHistory[]
   >([]);
+  const [errorAlertMsg, setErrorAlertMessage] = useState<string>("");
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    setErrorAlertMessage("");
     e.preventDefault();
-    console.log(formValues);
     axios
       .get(
         `${process.env.REACT_APP_API_URL}/zipcode/${formValues.countryCode}/${formValues.zipcode}`
       )
       .then((response) => {
-        console.log(response.data);
         setSearchResults(response.data.places[0]);
         const searchHistory = {
           result: response.data.places[0],
@@ -38,8 +40,13 @@ function App() {
         setZipcodeSearchHistory([...zipcodeSearchHistory]);
         setFormValues(formDefaultValue);
       })
-      .catch(() => {
-        console.log("error");
+      .catch((error) => {
+        console.log("error", error.response);
+        if (error.response.status === 404) {
+          setErrorAlertMessage("No results for this search criteria");
+        } else {
+          setErrorAlertMessage("Server error");
+        }
       });
   }
 
@@ -53,56 +60,28 @@ function App() {
     setFormValues({ ...formValues });
   }
 
-  console.log(zipcodeSearchHistory);
+  function clearHistory() {
+    setZipcodeSearchHistory([]);
+  }
+
+  const searchFormProps = {
+    handleSubmit,
+    handleCountryCodeChange,
+    formValues,
+    handleZipcodeChange,
+    searchResults,
+    clearHistory,
+    errorAlertMsg,
+  };
 
   return (
     <div className="App">
+      <Navbar />
       <div className="App-header">
         <Grid container justifyContent="center">
-          <Grid item lg={6} xs={12} component={Paper}>
-            <form
-              onSubmit={(e: React.FormEvent<HTMLFormElement>) =>
-                handleSubmit(e)
-              }
-            >
-              <Grid container padding={3}>
-                <Grid item xs={2}>
-                  <TextField
-                    required
-                    label="Country Code"
-                    inputProps={{ maxLength: 2 }}
-                    value={formValues.countryCode}
-                    onChange={(e) => {
-                      handleCountryCodeChange(e.target.value);
-                    }}
-                  />
-                </Grid>
-                <Grid xs={5}>
-                  <TextField
-                    required
-                    label="Zip Code"
-                    value={formValues.zipcode}
-                    onChange={(e) => {
-                      handleZipcodeChange(e.target.value);
-                    }}
-                  />
-                </Grid>
-                <Grid xs={3}>
-                  <Button type="submit" variant="outlined" size="large">
-                    Search
-                  </Button>
-                </Grid>
-              </Grid>
-              <Grid item xs={6}>
-                <Typography>
-                  {searchResults &&
-                    `Search Results: ${searchResults["place name"]}, ${searchResults.state}`}
-                </Typography>
-              </Grid>
-            </form>
-          </Grid>
-          <Grid item lg={12} xs={12}>
-            <SearchHistoryTable searchHistory={zipcodeSearchHistory} />
+          <SearchForm {...searchFormProps} />
+          <Grid item lg={8} xs={12}>
+            <SearchHistoryTable zipcodeSearchHistory={zipcodeSearchHistory} />
           </Grid>
         </Grid>
       </div>

@@ -19,3 +19,8 @@ export type SearchHistory = {
     zipcode: string;
   };
 };
+
+export type FormValues = {
+  countryCode: string;
+  zipcode: string;
+};

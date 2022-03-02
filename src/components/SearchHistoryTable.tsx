@@ -8,12 +8,12 @@ import Paper from "@mui/material/Paper";
 import { SearchHistory } from "../Types";
 
 interface Props {
-  searchHistory: SearchHistory[];
+  zipcodeSearchHistory: SearchHistory[];
 }
 
-export default function SearchHistoryTable({ searchHistory }: Props) {
+export default function SearchHistoryTable({ zipcodeSearchHistory }: Props) {
   return (
-    <TableContainer sx={{ mt: 5 }} component={Paper}>
+    <TableContainer sx={{ mt: 5, minHeight: 300 }} component={Paper}>
       <Table aria-label="simple table">
         <TableHead>
           <TableRow>
@@ -24,13 +24,13 @@ export default function SearchHistoryTable({ searchHistory }: Props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {searchHistory.map((row, i) => (
+          {zipcodeSearchHistory.map((row, i) => (
             <TableRow
-              key={i + 1}
+              key={i}
               sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
             >
               <TableCell component="th" scope="row">
-                {i}
+                {i + 1}
               </TableCell>
               <TableCell align="right">
                 {row.searchCriteria.countryCode}
